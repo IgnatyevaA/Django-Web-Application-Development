@@ -1,0 +1,54 @@
+{% extends 'mailings/base.html' %}
+
+{% block title %}Главная страница - Сервис управления рассылками{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Добро пожаловать в сервис управления рассылками</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <h3>{{ total_mailings }}</h3>
+                <p class="mb-0">Всего рассылок</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <h3>{{ active_mailings }}</h3>
+                <p class="mb-0">Активных рассылок</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <h3>{{ unique_recipients }}</h3>
+                <p class="mb-0">Уникальных получателей</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Быстрые действия</h5>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'mailings:recipient_create' %}" class="btn btn-primary me-2">Добавить получателя</a>
+                <a href="{% url 'mailings:message_create' %}" class="btn btn-success me-2">Создать сообщение</a>
+                <a href="{% url 'mailings:mailing_create' %}" class="btn btn-info">Создать рассылку</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
