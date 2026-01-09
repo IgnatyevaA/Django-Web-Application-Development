@@ -25,8 +25,12 @@
                         <td>{{ message.subject }}</td>
                         <td>{{ message.body|truncatewords:15 }}</td>
                         <td>
+                            {% if message.owner == user or user.is_staff %}
                             <a href="{% url 'mailings:message_update' message.pk %}" class="btn btn-sm btn-warning">Редактировать</a>
                             <a href="{% url 'mailings:message_delete' message.pk %}" class="btn btn-sm btn-danger">Удалить</a>
+                            {% else %}
+                            <span class="text-muted">Только просмотр</span>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}

@@ -42,8 +42,12 @@
                         <td>{{ mailing.recipients.count }}</td>
                         <td>
                             <a href="{% url 'mailings:mailing_detail' mailing.pk %}" class="btn btn-sm btn-info">Детали</a>
+                            {% if mailing.owner == user or user.is_staff %}
                             <a href="{% url 'mailings:mailing_update' mailing.pk %}" class="btn btn-sm btn-warning">Редактировать</a>
                             <a href="{% url 'mailings:mailing_delete' mailing.pk %}" class="btn btn-sm btn-danger">Удалить</a>
+                            {% else %}
+                            <span class="text-muted">Только просмотр</span>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}

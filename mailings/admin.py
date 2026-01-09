@@ -4,21 +4,22 @@ from .models import Recipient, Message, Mailing, MailingAttempt
 
 @admin.register(Recipient)
 class RecipientAdmin(admin.ModelAdmin):
-    list_display = ('email', 'full_name', 'comment')
+    list_display = ('email', 'full_name', 'owner', 'comment')
     search_fields = ('email', 'full_name')
-    list_filter = ('email',)
+    list_filter = ('owner',)
 
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ('subject', 'body')
+    list_display = ('subject', 'owner', 'body')
     search_fields = ('subject', 'body')
+    list_filter = ('owner',)
 
 
 @admin.register(Mailing)
 class MailingAdmin(admin.ModelAdmin):
-    list_display = ('id', 'message', 'status', 'start_time', 'end_time')
-    list_filter = ('status', 'start_time')
+    list_display = ('id', 'message', 'owner', 'status', 'start_time', 'end_time')
+    list_filter = ('status', 'start_time', 'owner')
     search_fields = ('message__subject',)
     filter_horizontal = ('recipients',)
 

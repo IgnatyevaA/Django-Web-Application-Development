@@ -6,8 +6,10 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Детали рассылки #{{ mailing.id }}</h1>
     <div>
-        <a href="{% url 'mailings:mailing_send' mailing.pk %}" class="btn btn-success">Отправить рассылку</a>
+        {% if mailing.owner == user or user.is_staff %}
+        <a href="{% url 'mailings:send_mailing' mailing.pk %}" class="btn btn-success">Отправить рассылку</a>
         <a href="{% url 'mailings:mailing_update' mailing.pk %}" class="btn btn-warning">Редактировать</a>
+        {% endif %}
         <a href="{% url 'mailings:mailing_list' %}" class="btn btn-secondary">Назад к списку</a>
     </div>
 </div>

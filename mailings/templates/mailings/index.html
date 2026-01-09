@@ -36,6 +36,7 @@
     </div>
 </div>
 
+{% if user.is_authenticated %}
 <div class="row mt-4">
     <div class="col-12">
         <div class="card">
@@ -50,5 +51,21 @@
         </div>
     </div>
 </div>
+{% else %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Вход в систему</h5>
+            </div>
+            <div class="card-body">
+                <p>Для работы с рассылками необходимо войти в систему или зарегистрироваться.</p>
+                <a href="{% url 'users:login' %}" class="btn btn-primary me-2">Войти</a>
+                <a href="{% url 'users:register' %}" class="btn btn-success">Зарегистрироваться</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
 

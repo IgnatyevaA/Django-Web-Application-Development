@@ -1,0 +1,56 @@
+{% extends 'mailings/base.html' %}
+
+{% block title %}Попытки рассылок{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Попытки рассылок</h1>
+        
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Дата и время</th>
+                            <th>Рассылка</th>
+                            <th>Получатель</th>
+                            <th>Статус</th>
+                            <th>Ответ сервера</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for attempt in attempts %}
+                        <tr>
+                            <td>{{ attempt.attempt_time|date:"d.m.Y H:i" }}</td>
+                            <td>
+                                <a href="{% url 'mailings:mailing_detail' attempt.mailing.pk %}">
+                                    {{ attempt.mailing.message.subject }}
+                                </a>
+                            </td>
+                            <td>{{ attempt.recipient.email }}</td>
+                            <td>
+                                {% if attempt.status == 'Успешно' %}
+                                    <span class="badge bg-success">{{ attempt.status }}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">{{ attempt.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small>{{ attempt.server_response|truncatewords:10 }}</small>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">Нет попыток рассылок</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

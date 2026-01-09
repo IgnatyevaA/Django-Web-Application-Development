@@ -37,6 +37,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'mailings:index' %}">Главная</a>
                     </li>
+                    {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'mailings:recipient_list' %}">Получатели</a>
                     </li>
@@ -46,6 +47,30 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'mailings:mailing_list' %}">Рассылки</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'mailings:attempt_list' %}">Попытки рассылок</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'mailings:statistics' %}">Статистика</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:profile' %}">Профиль</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:logout' %}">Выход</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:login' %}">Вход</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:register' %}">Регистрация</a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
