@@ -1,0 +1,75 @@
+{% extends 'mailings/base.html' %}
+
+{% block title %}{{ message.subject }} - Детали сообщения{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Детали сообщения</h1>
+            <div>
+                {% if message.owner == user or user.is_staff %}
+                <a href="{% url 'mailings:message_update' message.pk %}" class="btn btn-warning">Редактировать</a>
+                <a href="{% url 'mailings:message_delete' message.pk %}" class="btn btn-danger">Удалить</a>
+                {% endif %}
+                <a href="{% url 'mailings:message_list' %}" class="btn btn-secondary">Назад к списку</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3>{{ message.subject }}</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>Тема письма:</strong>
+                    <p>{{ message.subject }}</p>
+                </div>
+                <div class="mb-3">
+                    <strong>Тело письма:</strong>
+                    <p style="white-space: pre-wrap;">{{ message.body }}</p>
+                </div>
+                {% if message.owner %}
+                <div class="mb-3">
+                    <strong>Владелец:</strong>
+                    <p>{{ message.owner.email }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Рассылки с этим сообщением</h5>
+            </div>
+            <div class="card-body">
+                {% if mailings %}
+                    <ul class="list-group">
+                        {% for mailing in mailings %}
+                        <li class="list-group-item">
+                            <a href="{% url 'mailings:mailing_detail' mailing.pk %}">
+                                Рассылка #{{ mailing.id }} - {{ mailing.get_status }}
+                            </a>
+                            <br>
+                            <small class="text-muted">
+                                {{ mailing.start_time|date:"d.m.Y H:i" }} - {{ mailing.end_time|date:"d.m.Y H:i" }}
+                            </small>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">Это сообщение еще не используется в рассылках.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+

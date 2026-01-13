@@ -9,21 +9,21 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         now = timezone.now()
-
+        
         # Получаем рассылки, которые нужно отправить
         mailings = Mailing.objects.filter(
             status__in=['Создана', 'Запущена'],
             start_time__lte=now,
             end_time__gte=now
         )
-
+        
         for mailing in mailings:
             self.stdout.write(f'Обработка рассылки #{mailing.id}: {mailing.message.subject}')
-
+            
             recipients = mailing.recipients.all()
             success_count = 0
             fail_count = 0
-
+            
             for recipient in recipients:
                 try:
                     send_mail(
@@ -54,17 +54,19 @@ class Command(BaseCommand):
                     self.stdout.write(
                         self.style.ERROR(f'  ✗ Ошибка для {recipient.email}: {str(e)}')
                     )
-
-            # Обновляем статус рассылки динамически
-            mailing.status = mailing.get_status()
-            mailing.save(update_fields=['status'])
-
+            
+            # Обновляем статус рассылки динамически без валидации
+            current_status = mailing.get_status()
+            if mailing.status != current_status:
+                Mailing.objects.filter(pk=mailing.pk).update(status=current_status)
+                mailing.status = current_status
+            
             self.stdout.write(
                 self.style.SUCCESS(
                     f'Рассылка #{mailing.id} завершена. Успешно: {success_count}, Неудачно: {fail_count}'
                 )
             )
-
+        
         # Обновляем статусы завершенных рассылок
         completed_mailings = Mailing.objects.filter(
             status='Запущена',
@@ -75,3 +77,4 @@ class Command(BaseCommand):
             self.stdout.write(
                 self.style.SUCCESS(f'Обновлено статусов завершенных рассылок: {count}')
             )
+

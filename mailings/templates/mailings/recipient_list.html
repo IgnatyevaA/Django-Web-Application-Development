@@ -27,6 +27,7 @@
                         <td>{{ recipient.full_name }}</td>
                         <td>{{ recipient.comment|truncatewords:10 }}</td>
                         <td>
+                            <a href="{% url 'mailings:recipient_detail' recipient.pk %}" class="btn btn-sm btn-info">Детали</a>
                             {% if recipient.owner == user or user.is_staff %}
                             <a href="{% url 'mailings:recipient_update' recipient.pk %}" class="btn btn-sm btn-warning">Редактировать</a>
                             <a href="{% url 'mailings:recipient_delete' recipient.pk %}" class="btn btn-sm btn-danger">Удалить</a>

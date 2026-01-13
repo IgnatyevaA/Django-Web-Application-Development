@@ -10,6 +10,9 @@
         <a href="{% url 'mailings:send_mailing' mailing.pk %}" class="btn btn-success">Отправить рассылку</a>
         <a href="{% url 'mailings:mailing_update' mailing.pk %}" class="btn btn-warning">Редактировать</a>
         {% endif %}
+        {% if user.has_perm('mailings.can_disable_mailing') and mailing.status != 'Завершена' %}
+        <a href="{% url 'mailings:mailing_disable' mailing.pk %}" class="btn btn-danger">Отключить рассылку</a>
+        {% endif %}
         <a href="{% url 'mailings:mailing_list' %}" class="btn btn-secondary">Назад к списку</a>
     </div>
 </div>

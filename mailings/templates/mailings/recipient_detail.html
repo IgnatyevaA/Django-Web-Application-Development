@@ -1,0 +1,106 @@
+{% extends 'mailings/base.html' %}
+
+{% block title %}{{ recipient.full_name }} - Детали получателя{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Детали получателя</h1>
+            <div>
+                {% if recipient.owner == user or user.is_staff %}
+                <a href="{% url 'mailings:recipient_update' recipient.pk %}" class="btn btn-warning">Редактировать</a>
+                <a href="{% url 'mailings:recipient_delete' recipient.pk %}" class="btn btn-danger">Удалить</a>
+                {% endif %}
+                <a href="{% url 'mailings:recipient_list' %}" class="btn btn-secondary">Назад к списку</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3>{{ recipient.full_name }}</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>Email:</strong>
+                    <p><a href="mailto:{{ recipient.email }}">{{ recipient.email }}</a></p>
+                </div>
+                <div class="mb-3">
+                    <strong>Ф. И. О.:</strong>
+                    <p>{{ recipient.full_name }}</p>
+                </div>
+                {% if recipient.comment %}
+                <div class="mb-3">
+                    <strong>Комментарий:</strong>
+                    <p style="white-space: pre-wrap;">{{ recipient.comment }}</p>
+                </div>
+                {% endif %}
+                {% if recipient.owner %}
+                <div class="mb-3">
+                    <strong>Владелец:</strong>
+                    <p>{{ recipient.owner.email }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5>Рассылки с этим получателем</h5>
+            </div>
+            <div class="card-body">
+                {% if mailings %}
+                    <ul class="list-group">
+                        {% for mailing in mailings %}
+                        <li class="list-group-item">
+                            <a href="{% url 'mailings:mailing_detail' mailing.pk %}">
+                                Рассылка #{{ mailing.id }} - {{ mailing.get_status }}
+                            </a>
+                            <br>
+                            <small class="text-muted">
+                                {{ mailing.start_time|date:"d.m.Y H:i" }} - {{ mailing.end_time|date:"d.m.Y H:i" }}
+                            </small>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">Этот получатель еще не участвует в рассылках.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if attempts %}
+        <div class="card">
+            <div class="card-header">
+                <h5>Последние попытки рассылок</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for attempt in attempts %}
+                    <li class="list-group-item">
+                        <strong>{{ attempt.status }}</strong>
+                        <br>
+                        <small class="text-muted">
+                            {{ attempt.attempt_time|date:"d.m.Y H:i" }}
+                        </small>
+                        <br>
+                        <a href="{% url 'mailings:mailing_detail' attempt.mailing.pk %}">
+                            Рассылка #{{ attempt.mailing.id }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+
+

@@ -48,45 +48,6 @@ class UserLoginForm(AuthenticationForm):
         widget=forms.PasswordInput(attrs={'class': 'form-control'})
     )
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Указываем, что поле username используется для поиска по email
-        self.fields['username'].label = 'Email'
-
-    def clean(self):
-        """Переопределяем clean для корректной аутентификации по email"""
-        username = self.cleaned_data.get('username')
-        password = self.cleaned_data.get('password')
-
-        if username and password:
-            from django.contrib.auth import authenticate
-            from .models import User
-
-            # Ищем пользователя по email
-            try:
-                user_obj = User.objects.get(email=username)
-                # Аутентифицируем пользователя (Django использует USERNAME_FIELD)
-                user = authenticate(
-                    request=self.request,
-                    username=user_obj.email,  # Передаем email как username
-                    password=password
-                )
-                if user is None:
-                    raise forms.ValidationError(
-                        'Неверный email или пароль.',
-                        code='invalid_login',
-                    )
-                self.confirm_login_allowed(user)
-                # Сохраняем пользователя для использования в get_user()
-                self.user_cache = user
-            except User.DoesNotExist:
-                raise forms.ValidationError(
-                    'Неверный email или пароль.',
-                    code='invalid_login',
-                )
-
-        return self.cleaned_data
-
 
 class UserProfileForm(forms.ModelForm):
     """Форма редактирования профиля пользователя"""

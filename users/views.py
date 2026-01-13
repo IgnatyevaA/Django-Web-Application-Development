@@ -9,7 +9,7 @@ def register(request):
     """Регистрация пользователя"""
     if request.user.is_authenticated:
         return redirect('mailings:index')
-
+    
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():
@@ -26,7 +26,7 @@ def user_login(request):
     """Вход пользователя"""
     if request.user.is_authenticated:
         return redirect('mailings:index')
-
+    
     if request.method == 'POST':
         form = UserLoginForm(data=request.POST)
         if form.is_valid():

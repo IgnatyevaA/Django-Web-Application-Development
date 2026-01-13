@@ -10,13 +10,6 @@
                 <h3>Вход</h3>
             </div>
             <div class="card-body">
-                {% if form.non_field_errors %}
-                    <div class="alert alert-danger">
-                        {% for error in form.non_field_errors %}
-                            <div>{{ error }}</div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
                 <form method="post">
                     {% csrf_token %}
                     {% for field in form %}
@@ -30,14 +23,10 @@
                     {% endfor %}
                     <button type="submit" class="btn btn-primary">Войти</button>
                     <a href="{% url 'users:register' %}" class="btn btn-link">Нет аккаунта? Зарегистрироваться</a>
-                    <div class="mt-2">
-                        <a href="{% url 'users:password_reset' %}" class="btn btn-link">Забыли пароль?</a>
-                    </div>
+                    <a href="{% url 'users:password_reset' %}" class="btn btn-link">Забыли пароль?</a>
                 </form>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
-
-

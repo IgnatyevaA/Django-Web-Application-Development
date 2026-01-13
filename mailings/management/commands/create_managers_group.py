@@ -44,11 +44,11 @@ class Command(BaseCommand):
                 content_type=mailing_ct
             )[0],
         ]
-
+        
         # Добавляем права в группу
         for permission in permissions:
             group.permissions.add(permission)
-
+        
         self.stdout.write(
             self.style.SUCCESS(
                 f'Группе "Менеджеры" добавлены права: {len(permissions)}'

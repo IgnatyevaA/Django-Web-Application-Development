@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-hw+!igpccv9xj83s-5n-a9&fli
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_HOSTS') else ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_HOSTS') else []
 
 
 # Application definition
@@ -47,12 +47,14 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware',  # Клиентское кеширование
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',  # Клиентское кеширование
 ]
 
 ROOT_URLCONF = 'mailing_service.urls'
@@ -79,12 +81,25 @@ WSGI_APPLICATION = 'mailing_service.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': os.getenv('DATABASE_ENGINE', 'django.db.backends.sqlite3'),
-        'NAME': BASE_DIR / os.getenv('DATABASE_NAME', 'db.sqlite3'),
+DATABASE_ENGINE = os.getenv('DATABASE_ENGINE', 'django.db.backends.sqlite3')
+if DATABASE_ENGINE == 'django.db.backends.postgresql':
+    DATABASES = {
+        'default': {
+            'ENGINE': DATABASE_ENGINE,
+            'NAME': os.getenv('DB_NAME', 'django_db'),
+            'USER': os.getenv('DB_USER', 'postgres'),
+            'PASSWORD': os.getenv('DB_PASSWORD', ''),
+            'HOST': os.getenv('DB_HOST', 'localhost'),
+            'PORT': os.getenv('DB_PORT', '5432'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': DATABASE_ENGINE,
+            'NAME': BASE_DIR / os.getenv('DATABASE_NAME', 'db.sqlite3'),
+        }
+    }
 
 
 # Password validation
@@ -145,17 +160,30 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 
 # Cache settings
-CACHES = {
-    'default': {
-        'BACKEND': os.getenv('CACHE_BACKEND', 'django.core.cache.backends.locmem.LocMemCache'),
-        'LOCATION': os.getenv('CACHE_LOCATION', 'default'),
+CACHE_ENABLED = os.getenv('CACHE_ENABLED', 'False') == 'True'
+if CACHE_ENABLED and os.getenv('REDIS_HOST'):
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': f"redis://{os.getenv('REDIS_HOST', '127.0.0.1')}:{os.getenv('REDIS_PORT', '6379')}/{os.getenv('REDIS_DB', '1')}",
+        }
     }
-}
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': os.getenv('CACHE_BACKEND', 'django.core.cache.backends.locmem.LocMemCache'),
+            'LOCATION': os.getenv('CACHE_LOCATION', 'default'),
+        }
+    }
+
+# Клиентское кеширование (HTTP заголовки)
+if not DEBUG:
+    # В продакшене используем более агрессивное кеширование
+    CACHE_MIDDLEWARE_SECONDS = 300
+else:
+    CACHE_MIDDLEWARE_SECONDS = 60
 
 # Login/Logout URLs
 LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = 'mailings:index'
 LOGOUT_REDIRECT_URL = 'mailings:index'
-
-# Password Reset Settings
-PASSWORD_RESET_TIMEOUT = 3600  # 1 час
